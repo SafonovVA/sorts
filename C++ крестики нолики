@@ -1,0 +1,227 @@
+#include <iostream>
+#include <Windows.h>
+#include <conio.h>
+#include <ctime>
+using namespace std;
+
+enum keys { up = 72, down = 80, left = 75, right = 77, Enter = 13 };
+
+void SetPos(int x, int y) {
+	COORD cd;
+	cd.X = x;
+	cd.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cd);
+}
+
+void main() {
+	int key;
+	int x = 3, y = 2, a, b;
+	int pole[3][3]{};
+	int pole_x = 0, pole_y = 0, winX = 0, winY = 0, human, t = 8;
+	bool hodX = true, win = false, press = false, ai = false;
+	int count = 0;
+	srand(time(0));
+	cout << R"(
+ +---+---+---+
+ |   |   |   |
+ +---+---+---+
+ |   |   |   |
+ +---+---+---+
+ |   |   |   |
+ +---+---+---+
+)";
+	SetPos(x, y);
+
+	while (true) {
+		if (_kbhit()) {
+			key = _getch();
+			if (key == keys::up && y != 2) {
+				y -= 2;
+				pole_y--;
+				SetPos(x, y);
+			}
+			else if (key == keys::down && y != 6) {
+				y += 2;
+				pole_y++;
+				SetPos(x, y);
+			}
+			else if (key == keys::right && x != 11) {
+				x += 4;
+				pole_x++;
+				SetPos(x, y);
+			}
+			else if (key == keys::left && x != 3) {
+				x -= 4;
+				pole_x--;
+				SetPos(x, y);
+			}
+			else if (key == keys::Enter) {
+				if (pole[pole_y][pole_x] == 0) {
+					//Ход человека
+					cout << "X";
+					count++;
+					if (count == 9) {
+						SetPos(0, 8);
+						cout << "Winner lost";
+						break;
+					}
+					pole[pole_y][pole_x] = 1;
+					//Ход компьютера
+					///////////////////////////////////
+					ai = false;
+					for (int i = 0; i < 3; i++) {// Проверка строки
+						human = 0;
+						//a = b = 0;
+						for (int j = 0; j < 3; j++) {
+							if (pole[i][j] == 1) {
+								human++;
+							}
+							else if (pole[i][j] == 0) {
+								a = i;
+								b = j;
+							}
+						}
+						if (human == 2 && pole[a][b] == 0) {
+							ai = true;
+							break;
+						}
+					}
+					if (!ai) {
+						for (int i = 0; i < 3; i++) {// Проверка столбца
+							human = 0;
+							a = b = 0;
+							for (int j = 0; j < 3; j++) {
+								if (pole[j][i] == 1 && !ai) {
+									human++;
+								}
+								else if (pole[j][i] == 0 && !ai) {
+									a = j;
+									b = i;
+								}
+							}
+							if (human == 2 && pole[a][b] == 0 && !ai) {
+								ai = true;
+								break;
+							}
+						}
+					}
+					//////////////////////////////////
+					if (ai) {
+						pole_x = b;
+						pole_y = a;
+					}
+					else if (!ai) {
+						do {
+							pole_x = rand() % 3;
+							pole_y = rand() % 3;
+						} while (pole[pole_y][pole_x] != 0);
+					}
+					pole[pole_y][pole_x] = 2;
+					switch (pole_x) {
+					case 0: x = 3; break;
+					case 1: x = 7; break;
+					case 2: x = 11; break;
+					}
+					switch (pole_y) {
+					case 0: y = 2; break;
+					case 1: y = 4; break;
+					case 2: y = 6; break;
+					}
+					SetPos(x, y);
+					cout << "0";
+					count++;
+					SetPos(x, y);
+					if (count >= 5 && count != 9) {//Проверка на победителя
+						for (int i = 0; i < 3; i++) {
+							winX = winY = 0;
+							for (int j = 0; j < 3; j++) {
+								if (pole[i][j] == 1) { winX++; }
+								else if (pole[i][j] == 2) { winY++; }
+							}
+							if (winX == 3) {
+								win = true;
+								SetPos(0, 8);
+								cout << "X winner";
+								break;
+							}
+							else if (winY == 3) {
+								win = true;
+								SetPos(0, 8);
+								cout << "Y winner";
+								break;
+							}
+						}
+						if (win == true) {
+							break;
+						for (int i = 0; i < 3; i++) {
+							winX = winY = 0;
+							for (int j = 0; j < 3; j++) {
+								if (pole[j][i] == 1) { winX++; }
+								else if (pole[j][i] == 2) { winY++; }
+							}
+							if (winX == 3) {
+								win = true;
+								SetPos(0, 8);
+								cout << "X winner";
+								break;
+							}
+							else if (winY == 3) {
+								win = true;
+								SetPos(0, 8);
+								cout << "Y winner";
+								break;
+							}
+						}
+						if (win == true) {
+							break;
+						}
+						winX = winY = 0;
+						if (pole[1][1] == 1) winX++;
+						if (pole[2][2] == 1) winX++;
+						if (pole[3][3] == 1) winX++;
+						if (pole[1][1] == 2) winY++;
+						if (pole[2][2] == 2) winY++;
+						if (pole[3][3] == 2) winY++;
+						if (winX == 3) {
+							win = true;
+							SetPos(0, 8);
+							cout << "X winner";
+							break;
+						}
+						else if (winY == 3) {
+							win = true;
+							SetPos(0, 8);
+							cout << "Y winner";
+							break;
+						}
+						if (win == true) {
+							break;
+						}
+						winX = winY = 0;
+						if (pole[3][1] == 1) winX++;
+						if (pole[2][2] == 1) winX++;
+						if (pole[1][3] == 1) winX++;
+						if (pole[3][1] == 2) winY++;
+						if (pole[2][2] == 2) winY++;
+						if (pole[1][3] == 2) winY++;
+						if (winX == 3) {
+							win = true;
+							SetPos(0, 8);
+							cout << "X winner";
+							break;
+						}
+						else if (winY == 3) {
+							win = true;
+							SetPos(0, 8);
+							cout << "Y winner";
+							break;
+						}
+						if (win == true) {
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+}
