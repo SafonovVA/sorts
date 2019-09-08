@@ -1,0 +1,117 @@
+#include <iostream>
+#include <ctime>
+using namespace std;
+
+int summ(int arr[], int size, int summa);
+int maxim(int arr[], int size, int max);
+void vstavka(int array[], int size);
+int rec_binary_finder(int arr[], int size, int find, int min = 0, int max = 0);
+int binary_finder(int arr[], int size, int find);
+
+int main() {
+
+	srand(time(0));
+
+	const int size = 10;
+	int arr[size];
+	int find;
+
+	cout << "Input find value: ";
+	cin >> find;
+	int summa = 0;
+	int max = 0;
+	for (int i = 0; i < size; i++) {
+		arr[i] = rand() % 10 + 1;
+
+		cout << arr[i] << "  ";
+	}
+	//int arr[size] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	cout << endl;
+	vstavka(arr, size);
+	for (int i = 0; i < size; i++) {
+		cout << arr[i] << "  ";
+	}
+	cout << endl;
+
+	cout << "summa ravna: " << summ(arr, size, summa) << endl;
+	cout << "Maxim chislo: " << maxim(arr, size, max) << endl;
+	find = rec_binary_finder(arr, size, find, 0, size - 1);
+	cout << "Iskomoe chislo: " << find;
+
+	cin.get(); cin.get();
+	return 0;
+}
+
+int summ(int arr[], int size, int summa) {
+	if (size - 1 < 0) return summa;
+	else {
+		summa += arr[size - 1];
+		summ(arr, size - 1, summa);
+	}
+}
+
+int maxim(int arr[], int size, int max) {
+	if (max < arr[size - 1]) max = arr[size - 1];
+	if (size - 1 == 0) return max;
+	else {
+		maxim(arr, size - 1, max);
+	}
+}
+
+void bubble(int array[], int size) {
+	for (int i = 1; i < size; i++) {
+		for (int j = 0; j < size - i; j++) {
+			if (array[j] > array[j + 1]) {
+				array[j] = array[j] + array[j + 1];
+				array[j + 1] = array[j] - array[j + 1];
+				array[j] = array[j] - array[j + 1];
+			}
+		}
+	}
+}
+
+
+void vybor(int array[], int size) {
+	for (int i = 0; i < size - 1; i++) {
+		int min = i;
+		for (int j = i; j < size; j++) {
+			if (array[min] > array[j]) {
+				min = j;
+			}
+		}
+		if (i != min) {
+			int tmp = array[min];
+			array[min] = array[i];
+			array[i] = tmp;
+		}
+	}
+}
+
+void vstavka(int array[], int size) {
+	for (int i = 1; i < size; i++) {
+		for (int j = i, max; j > 0; j--) {
+			if (array[j] < array[j - 1]) {
+				max = array[j];
+				array[j] = array[j - 1];
+				array[j - 1] = max;
+			}
+		}
+	}
+}
+
+int rec_binary_finder(int arr[], int size, int find, int min = 0, int max = 0) {
+	int middle = (max + min) / 2;
+	if (find == arr[middle]) return middle;
+	else if (find > arr[middle]) rec_binary_finder(arr, size, find, middle + 1, max);
+	else rec_binary_finder(arr, size, find, min, middle - 1);
+}
+
+int binary_finder(int arr[], int size, int find) {
+	int max = size - 1, min = 0, middle;
+	while (min <= max) {
+		int middle = (max + min) / 2;
+		if (find == arr[middle]) return middle;
+		else if (find > arr[middle]) min = middle + 1;
+		else max = middle - 1;
+	}
+}
